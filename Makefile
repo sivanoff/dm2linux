@@ -9,7 +9,7 @@ IDIR	:= $(DESTDIR)/lib/modules/$(shell uname -r)/kernel/sound/drivers
 module: default
 
 default:
-	$(MAKE) -C $(KDIR) SUBDIRS=$(PWD) modules
+	$(MAKE) -C $(KDIR) M=$(PWD) modules
 
 install: default
 	mkdir -p $(IDIR)

@@ -64,18 +64,7 @@ static struct usb_driver dm2_driver;
 #  warning Please make sure your kernel is patched with linux-lowspeedbulk.patch
 #  define USE_BULK_SNDPIPE 1
 #endif
-// Kernel API compatibility
-#if LINUX_VERSION_CODE < KERNEL_VERSION(2,6,30)
-static inline
-int snd_card_create(int idx, const char *id,
-		    struct module *module, int extra_size,
-		    struct snd_card **card_ret)
-{
-	*card_ret = snd_card_new(idx, id, module, extra_size);
-	if (!(*card_ret)) return -1;
-	return 0;
-}
-#endif
+
 
 #define err(format, arg...) printk(KERN_ERR KBUILD_MODNAME ": " format "\n" , ## arg)
 #define info(format, arg...) printk(KERN_INFO KBUILD_MODNAME ": " format "\n" , ## arg)
@@ -748,7 +737,7 @@ static int dm2_midi_init(struct usb_dm2 *dev)
 
 	tasklet_init(&dev->dm2midi.tasklet, dm2_tasklet, (unsigned long)dev );
 
-	if (snd_card_create(index, id, THIS_MODULE, 0, &card) < 0) {
+	if (snd_card_new(&dev->interface->dev, index, id, THIS_MODULE, 0, &card) < 0) {
 		printk("%s snd_card_create failed\n", __FUNCTION__);
 		return -ENOMEM;
 	}
